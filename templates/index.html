@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Hub - 管理員後台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-2">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i class="fas fa-layer-group text-white text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">MediaAsset Manager</h1>
+            </div>
+            
+            <form action="/" method="GET" class="flex-1 max-w-md relative">
+                <input type="text" name="search" value="{{ search }}" placeholder="搜尋攝影師或描述..." 
+                       class="w-full pl-10 pr-4 py-2 border rounded-full bg-slate-100 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                <i class="fas fa-search absolute left-4 top-3 text-slate-400"></i>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <section class="mb-10">
+            <div class="bg-white rounded-2xl shadow-sm border p-6">
+                <h2 class="text-lg font-semibold mb-4 text-slate-700">快速上傳素材</h2>
+                <form action="/upload" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1">
+                        <label class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                            <i class="fas fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+                            <p class="text-sm text-slate-500">點擊或拖放圖片</p>
+                            <input type="file" name="file" class="hidden" required id="fileInput">
+                            <p id="fileNameDisplay" class="text-xs text-indigo-600 mt-2 font-medium"></p>
+                        </label>
+                    </div>
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input type="text" name="photographer" placeholder="攝影師姓名" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">完成並上傳</button>
+                        </div>
+                        <textarea name="description" placeholder="輸入圖片描述或標籤..." class="w-full px-4 py-2 border rounded-lg h-20 focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold">資產庫 <span class="text-sm font-normal text-slate-500 ml-2">共 {{ assets|length }} 筆</span></h3>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for asset in assets %}
+                <div class="group bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="aspect-video overflow-hidden bg-slate-200">
+                        <img src="{{ asset.get_url() }}" alt="Thumb" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-slate-800 truncate mb-1">{{ asset.filename }}</h4>
+                        <div class="flex items-center text-xs text-slate-500 space-x-3 mb-3">
+                            <span><i class="far fa-user mr-1"></i>{{ asset.photographer }}</span>
+                            <span><i class="far fa-calendar mr-1"></i>{{ asset.upload_date.strftime('%Y/%m/%d') }}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 line-clamp-2 min-h-[40px] bg-slate-50 p-2 rounded">
+                            {{ asset.description or '未提供描述。' }}
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-span-full py-20 text-center text-slate-400">
+                    <i class="fas fa-inbox text-5xl mb-4"></i>
+                    <p>目前沒有找到任何素材</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "";
+            document.getElementById('fileNameDisplay').innerText = fileName ? "已選取: " + fileName : "";
+        });
+    </script>
+</body>
+</html>
