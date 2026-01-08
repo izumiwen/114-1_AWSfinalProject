@@ -2,31 +2,37 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>S3 簡易管理員</title>
+    <title>S3 Metadata 媒體管理</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8 text-indigo-700">S3 媒體存取測試 (無資料庫)</h1>
+<body class="bg-slate-50 p-8">
+    <div class="max-w-5xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-slate-800">資產管理 (S3 Metadata 版)</h1>
 
-        <div class="bg-white p-6 rounded-xl shadow-md mb-10">
-            <form action="/upload" method="POST" enctype="multipart/form-data" class="flex items-center space-x-4">
-                <input type="file" name="file" class="border p-2 rounded w-full" required>
-                <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">上傳至 S3</button>
+        <div class="bg-white p-6 rounded-lg shadow-sm mb-10 border border-slate-200">
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <input type="text" name="photographer" placeholder="攝影師名稱" class="border p-2 rounded w-full">
+                    <input type="text" name="description" placeholder="照片描述" class="border p-2 rounded w-full">
+                </div>
+                <div class="flex items-center gap-4">
+                    <input type="file" name="file" class="block w-full text-sm text-slate-500" required>
+                    <button type="submit" class="bg-indigo-600 text-white px-8 py-2 rounded-lg hover:bg-indigo-700 transition">上傳</button>
+                </div>
             </form>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             {% for asset in assets %}
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="{{ asset.url }}" class="w-full h-48 object-cover">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <img src="{{ asset.url }}" class="w-full h-48 object-cover bg-slate-100">
                 <div class="p-4">
-                    <p class="text-sm font-bold truncate">{{ asset.filename }}</p>
-                    <p class="text-xs text-gray-500">{{ asset.last_modified }}</p>
+                    <p class="font-bold text-slate-800">{{ asset.photographer }}</p>
+                    <p class="text-sm text-slate-600 mt-1 mb-2">{{ asset.description }}</p>
+                    <hr class="my-2">
+                    <p class="text-[10px] text-slate-400 truncate">原始檔: {{ asset.filename }}</p>
                 </div>
             </div>
-            {% else %}
-            <p class="col-span-full text-center text-gray-500 py-10">目前 S3 uploads/ 資料夾內沒有檔案</p>
             {% endfor %}
         </div>
     </div>
